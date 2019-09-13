@@ -164,8 +164,7 @@ def test_library_gapic_v1():
             and r.format_name_lower == 'shelfBookName']
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceNameFixed
-            and r.fixed_value == '_deleted-book_'
-            and r.format_name_upper == 'DeletedBook']
+            and r.fixed_value == '_deleted-book_']
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']
@@ -262,8 +261,7 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceNameFixed
             and r.fixed_value == '_deleted-book_'
-            and r.format_name_upper == 'DeletedBook'
-            and r.parent_interface == 'BookName']
+            and r.format_name_upper == 'DeletedBook']
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']

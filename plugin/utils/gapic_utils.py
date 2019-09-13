@@ -197,6 +197,15 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             update_collections(res, types_with_child_references,
                                collections, collection_oneofs)
 
+        # IAM
+        for service in proto_file.service:
+            for method in service.method:
+                # We only care about IAM methods
+                if method.name in ["GetIamPolicy", "SetIamPolicy", "TestIamPermissions"]:
+                    http = method.options.Extensions[resource_pb2.http]
+                    
+
+
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
     gapic_config['collections'] = list(collections.values())
