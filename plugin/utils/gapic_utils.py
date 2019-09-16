@@ -32,6 +32,7 @@ import copy
 import re
 import yaml
 
+from plugin.pb2 import annotations_pb2
 from plugin.pb2 import resource_pb2
 from plugin.utils.casing_utils import to_snake
 from plugin.templates import resource_name
@@ -202,8 +203,17 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             for method in service.method:
                 # We only care about IAM methods
                 if method.name in ["GetIamPolicy", "SetIamPolicy", "TestIamPermissions"]:
-                    http = method.options.Extensions[resource_pb2.http]
+                    http = method.options.Extensions[annotations_pb2.http]
                     
+                    # IAM methods should only have post bindings
+                    post_urls = [http.post]
+                    for additional_binding in http.additional_bindings:
+                        post_urls.append(additional_binding.post)
+                    
+                    # construct resource definitions from post URLs
+                    resources = construct_resources_from_urls(post_urls)
+                    update_collections(resources, types_with_child_references, collections, collection_oneofs)
+
 
 
     # Take the collections and collection_oneofs, convert them back to lists,
@@ -487,6 +497,17 @@ def get_oneof_for_resource(collection_config, gapic_config):
                         "A collection cannot be part of multiple oneofs")
                 oneof = oneof_config
     return oneof
+
+def construct_resources_from_urls(urls):
+    resource = resource_pb2.ResourceDescriptor()
+    for url in urls:
+        resource.pattern.append(create_pattern_from_url(url))
+
+
+
+
+def create_pattern_from_url(url):
+    pass
 
 
 def create_field_name(message_name, field):
